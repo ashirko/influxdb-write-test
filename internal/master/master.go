@@ -35,7 +35,7 @@ var DBName string
 
 func StartTest() {
 	params := parseFlags()
-	log.Printf("start %s for %d connections", params.ScriptName, params.ConNum, params.UdpAddress)
+	log.Printf("start %s for %d connections", params.ScriptName, params.ConNum)
 	tStart := influx_util.Nanoseconds()
 	if params.ScriptName == "influx-test" {
 		DBName = UdpDB
@@ -78,13 +78,13 @@ func runUdpBuff(params *ScriptParams) {
 	defer influx_util.CloseAndLog(c)
 	wgBuff.Add(1)
 	go influx_util.StartSender(c, &wgBuff, buff, ch, UdpSentPeriod, UdpMaxPoints)
-	startUdpClientsBuff(params, &wg, buff)
+	startClientsBuff(params, &wg, buff)
 	wg.Wait()
 	close(ch)
 	wgBuff.Wait()
 }
 
-func startUdpClientsBuff(params *ScriptParams, wg *sync.WaitGroup, buff chan *client.Point) {
+func startClientsBuff(params *ScriptParams, wg *sync.WaitGroup, buff chan *client.Point) {
 	for i := 1; i <= params.ConNum; i++ {
 		wg.Add(1)
 		go influx_client.StartClientBuff(buff, wg, params.MesNum, i)
@@ -96,22 +96,14 @@ func runHttpBuff(params *ScriptParams) {
 	var wg, wgBuff sync.WaitGroup
 	buff := make(chan *client.Point, 20000)
 	ch := make(chan bool)
-	c := influx_util.UdpClient(params.UdpAddress)
+	c := influx_util.HttpClient(params.HttpAddress)
 	defer influx_util.CloseAndLog(c)
 	wgBuff.Add(1)
 	go influx_util.StartSender(c, &wgBuff, buff, ch, HttpSentPeriod, HttpMaxPoints)
-	startHttpClientsBuff(params, &wg, buff)
+	startClientsBuff(params, &wg, buff)
 	wg.Wait()
 	close(ch)
 	wgBuff.Wait()
-}
-
-func startHttpClientsBuff(params *ScriptParams, wg *sync.WaitGroup, buff chan *client.Point) {
-	for i := 1; i <= params.ConNum; i++ {
-		wg.Add(1)
-		go influx_client.StartClientBuff(buff, wg, params.MesNum, i)
-		time.Sleep(1 * time.Millisecond)
-	}
 }
 
 func parseFlags() *ScriptParams {
