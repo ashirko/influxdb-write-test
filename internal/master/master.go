@@ -35,7 +35,7 @@ var DBName string
 
 func StartTest() {
 	params := parseFlags()
-	log.Printf("start %s for %d connections on  %s udpAddress", params.ScriptName, params.ConNum, params.UdpAddress)
+	log.Printf("start %s for %d connections", params.ScriptName, params.ConNum, params.UdpAddress)
 	tStart := influx_util.Nanoseconds()
 	if params.ScriptName == "influx-test" {
 		DBName = UdpDB
@@ -45,7 +45,7 @@ func StartTest() {
 		runUdpBuff(params)
 	} else if params.ScriptName == "influx-test-http" {
 		DBName = HttpDB
-		runUdpBuff(params)
+		runHttpBuff(params)
 	} else {
 		log.Println("Error: test function doesn't exits")
 		os.Exit(1)
