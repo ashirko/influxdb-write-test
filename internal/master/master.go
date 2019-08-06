@@ -28,16 +28,24 @@ const UdpSentPeriod = 5
 const UdpMaxPoints = 10
 const HttpSentPeriod = 5
 const HttpMaxPoints = 100
+const UdpDB = "udp"
+const HttpDB = "http"
+const Measurement = "monitoring"
+
+var DBName string
 
 func StartTest() {
 	params := parseFlags()
 	log.Printf("start %s for %d connections on  %s udpAddress", params.ScriptName, params.ConNum, params.UdpAddress)
 	tStart := influx_util.Nanoseconds()
 	if params.ScriptName == "influx-test" {
+		DBName = UdpDB
 		runUdp(params)
 	} else if params.ScriptName == "influx-test-buff" {
+		DBName = UdpDB
 		runUdpBuff(params)
 	} else if params.ScriptName == "influx-test-http" {
+		DBName = HttpDB
 		runUdpBuff(params)
 	} else {
 		log.Println("Error: test function doesn't exits")

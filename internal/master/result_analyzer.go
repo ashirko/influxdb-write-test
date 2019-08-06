@@ -18,8 +18,8 @@ func requestData(params *ScriptParams, from, to int64) []client.Result {
 		return nil
 	}
 	defer influx_util.CloseAndLog(c)
-	query := "select count(bytes) from monitoring1 where time >= " + strconv.FormatInt(from, 10) + " AND time <= " + strconv.FormatInt(to, 10)
-	q := client.NewQuery(query, "testudp", "")
+	query := "select count(bytes) from " + Measurement + " where time >= " + strconv.FormatInt(from, 10) + " AND time <= " + strconv.FormatInt(to, 10)
+	q := client.NewQuery(query, DBName, "")
 	if response, err := c.Query(q); err == nil && response.Error() == nil {
 		return response.Results
 	}

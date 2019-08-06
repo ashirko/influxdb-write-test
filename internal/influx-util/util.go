@@ -56,14 +56,11 @@ func StartSender(c client.Client, wgBuff *sync.WaitGroup, buff chan *client.Poin
 	for {
 		select {
 		case <-ch:
-			//log.Println("ch is closed!")
-			//log.Println("len bp:", len(bp.Points()))
 			if len(bp.Points()) > 0 {
 				SentData(c, bp)
 			}
 			return
 		case <-ticker.C:
-			//log.Println("receive ticker!")
 			if len(bp.Points()) > 0 {
 				SentData(c, bp)
 				bp, err = client.NewBatchPoints(bpconfig)
@@ -73,7 +70,6 @@ func StartSender(c client.Client, wgBuff *sync.WaitGroup, buff chan *client.Poin
 				}
 			}
 		case Point := <-buff:
-			//log.Println("receive point:", Point)
 			bp.AddPoint(Point)
 			if len(bp.Points()) == maxPoints {
 				SentData(c, bp)
