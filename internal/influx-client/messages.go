@@ -1,12 +1,13 @@
 package influx_client
 
 import (
-	"github.com/ashirko/influxdb-write-test/internal/master"
 	client "github.com/influxdata/influxdb1-client/v2"
 	"log"
 	"strconv"
 	"time"
 )
+
+const Measurement = "monitoring"
 
 func formData(id, mesNum int) *client.Point {
 	tags := map[string]string{
@@ -25,7 +26,7 @@ func formData(id, mesNum int) *client.Point {
 		"dump":       false,
 		"double":     false,
 	}
-	pt, err := client.NewPoint(master.Measurement, tags, fields, time.Now())
+	pt, err := client.NewPoint(Measurement, tags, fields, time.Now())
 	if err != nil {
 		log.Println("Error: ", err.Error())
 	}

@@ -3,6 +3,7 @@ package master
 import (
 	"encoding/json"
 	"fmt"
+	influx_client "github.com/ashirko/influxdb-write-test/internal/influx-client"
 	influx_util "github.com/ashirko/influxdb-write-test/internal/influx-util"
 	client "github.com/influxdata/influxdb1-client/v2"
 	"log"
@@ -18,7 +19,7 @@ func requestData(params *ScriptParams, from, to int64) []client.Result {
 		return nil
 	}
 	defer influx_util.CloseAndLog(c)
-	query := "select count(bytes) from " + Measurement + " where time >= " + strconv.FormatInt(from, 10) + " AND time <= " + strconv.FormatInt(to, 10)
+	query := "select count(bytes) from " + influx_client.Measurement + " where time >= " + strconv.FormatInt(from, 10) + " AND time <= " + strconv.FormatInt(to, 10)
 	q := client.NewQuery(query, DBName, "")
 	if response, err := c.Query(q); err == nil && response.Error() == nil {
 		return response.Results

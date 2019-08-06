@@ -30,7 +30,6 @@ const HttpSentPeriod = 5
 const HttpMaxPoints = 100
 const UdpDB = "udp"
 const HttpDB = "http"
-const Measurement = "monitoring"
 
 var DBName string
 
