@@ -3,7 +3,7 @@ package master
 import (
 	"encoding/json"
 	"fmt"
-	influx_util "github.com/ashirko/influxdb-udp-test/internal/influx-util"
+	influx_util "github.com/ashirko/influxdb-write-test/internal/influx-util"
 	client "github.com/influxdata/influxdb1-client/v2"
 	"log"
 	"strconv"

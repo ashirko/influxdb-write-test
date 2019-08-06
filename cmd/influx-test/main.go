@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ashirko/influxdb-udp-test/internal/master"
+	"github.com/ashirko/influxdb-write-test/internal/master"
 )
 
 func main() {

@@ -2,8 +2,8 @@ package master
 
 import (
 	"flag"
-	"github.com/ashirko/influxdb-udp-test/internal/influx-client"
-	influx_util "github.com/ashirko/influxdb-udp-test/internal/influx-util"
+	"github.com/ashirko/influxdb-write-test/internal/influx-client"
+	influx_util "github.com/ashirko/influxdb-write-test/internal/influx-util"
 	client "github.com/influxdata/influxdb1-client/v2"
 	"log"
 	"os"
