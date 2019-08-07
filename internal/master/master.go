@@ -14,6 +14,7 @@ import (
 
 type ScriptParams struct {
 	ConNum, MesNum int
+	timeWait int
 	ScriptName     string
 	UdpAddress     string
 	HttpAddress    string
@@ -23,7 +24,7 @@ const conNumDef = 100
 const mesNumDef = 100
 const udpAddrDef = "127.0.0.1:8089"
 const httpAddrDef = "http://localhost:8086"
-const sleepPeriod = 20
+const waitDefault = 5
 const UdpSentPeriod = 5
 const UdpMaxPoints = 10
 const HttpSentPeriod = 5
@@ -36,7 +37,7 @@ var DBName string
 func StartTest() {
 	params := parseFlags()
 	log.Printf("start %s for %d connections", params.ScriptName, params.ConNum)
-	tStart := influx_util.Nanoseconds()
+	tStart := influx_util.Nanoseconds()/1000000*1000000
 	if params.ScriptName == "influx-test" {
 		DBName = UdpDB
 		runUdp(params)
@@ -50,7 +51,7 @@ func StartTest() {
 		log.Println("Error: test function doesn't exits")
 		os.Exit(1)
 	}
-	time.Sleep(sleepPeriod * time.Second)
+	time.Sleep(time.Duration(params.timeWait) * time.Second)
 	tFinish := influx_util.Nanoseconds()
 	data := requestData(params, tStart, tFinish)
 	compareResult(params, data)
@@ -112,6 +113,7 @@ func parseFlags() *ScriptParams {
 	vals := new(ScriptParams)
 	flag.IntVar(&vals.ConNum, "c", conNumDef, "number of connections")
 	flag.IntVar(&vals.MesNum, "m", mesNumDef, "number of messages")
+	flag.IntVar(&vals.timeWait, "s", waitDefault, "wait before checking result")
 	flag.StringVar(&vals.UdpAddress, "u", udpAddrDef, "InfluxDB UDP Address")
 	flag.StringVar(&vals.HttpAddress, "h", httpAddrDef, "InfluxDB HTTP Address")
 	flag.Parse()
