@@ -47,9 +47,16 @@ func HttpClient(addr string) client.Client {
 	return c
 }
 
-func StartSender(c client.Client, wgBuff *sync.WaitGroup, buff chan *client.Point, ch chan bool, sentPeriod, maxPoints int) {
+func BpConfig(db string) client.BatchPointsConfig {
+	bpconfig := client.BatchPointsConfig{
+		Precision: "ms",
+		Database:  db,
+	}
+	return bpconfig
+}
+
+func StartSender(c client.Client, wgBuff *sync.WaitGroup, buff chan *client.Point, ch chan bool, sentPeriod, maxPoints int, bpconfig client.BatchPointsConfig) {
 	defer wgBuff.Done()
-	bpconfig := client.BatchPointsConfig{Precision: "ms"}
 	bp, err := client.NewBatchPoints(bpconfig)
 	ticker := time.NewTicker(time.Duration(sentPeriod) * time.Second)
 	defer ticker.Stop()

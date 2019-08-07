@@ -77,19 +77,12 @@ func runUdpBuff(params *ScriptParams) {
 	c := influx_util.UdpClient(params.UdpAddress)
 	defer influx_util.CloseAndLog(c)
 	wgBuff.Add(1)
-	go influx_util.StartSender(c, &wgBuff, buff, ch, UdpSentPeriod, UdpMaxPoints)
+	bpconfig := influx_util.BpConfig(DBName)
+	go influx_util.StartSender(c, &wgBuff, buff, ch, UdpSentPeriod, UdpMaxPoints, bpconfig)
 	startClientsBuff(params, &wg, buff)
 	wg.Wait()
 	close(ch)
 	wgBuff.Wait()
-}
-
-func startClientsBuff(params *ScriptParams, wg *sync.WaitGroup, buff chan *client.Point) {
-	for i := 1; i <= params.ConNum; i++ {
-		wg.Add(1)
-		go influx_client.StartClientBuff(buff, wg, params.MesNum, i)
-		time.Sleep(1 * time.Millisecond)
-	}
 }
 
 func runHttpBuff(params *ScriptParams) {
@@ -99,13 +92,22 @@ func runHttpBuff(params *ScriptParams) {
 	c := influx_util.HttpClient(params.HttpAddress)
 	defer influx_util.CloseAndLog(c)
 	wgBuff.Add(1)
-	go influx_util.StartSender(c, &wgBuff, buff, ch, HttpSentPeriod, HttpMaxPoints)
+	bpconfig := influx_util.BpConfig(DBName)
+	go influx_util.StartSender(c, &wgBuff, buff, ch, HttpSentPeriod, HttpMaxPoints, bpconfig)
 	startClientsBuff(params, &wg, buff)
 	wg.Wait()
 	close(ch)
 	wgBuff.Wait()
 }
 
+
+func startClientsBuff(params *ScriptParams, wg *sync.WaitGroup, buff chan *client.Point) {
+	for i := 1; i <= params.ConNum; i++ {
+		wg.Add(1)
+		go influx_client.StartClientBuff(buff, wg, params.MesNum, i)
+		time.Sleep(1 * time.Millisecond)
+	}
+}
 func parseFlags() *ScriptParams {
 	vals := new(ScriptParams)
 	flag.IntVar(&vals.ConNum, "c", conNumDef, "number of connections")
